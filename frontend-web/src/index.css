@@ -1,3 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+body {
+  background-color: #f8fafc; /* This is the slate-50 hex color */
+}
