@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # COMPLETED: Comment this out so it doesn't conflict with VS Code
+  # backend:
+  #   build: ./backend
+  #   container_name: society-backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=...
+  #   volumes:
+  #     - ./backend:/app
+
+  # 2. The AI Service (Python) - Keep this!
+  ai-service:
+    build: ./ai-service
+    container_name: society-ai
+    ports:
+      - "5000:5000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
