@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import Layout from './components/Layout';
+import ResidentsPage from './pages/ResidentsPage';
+import ComplaintsPage from './pages/ComplaintsPage';
+import SettingsPage from './pages/SettingsPage';
 
 // A simple component to protect routes (forces login)
 const PrivateRoute = ({ children }) => {
@@ -28,9 +31,9 @@ function App() {
         <Route path="dashboard" element={<DashboardPage />} />
         
         {/* We will build these pages later */}
-        <Route path="complaints" element={<div className="text-slate-500">Complaints Page Coming Soon</div>} />
-        <Route path="users" element={<div className="text-slate-500">Users Page Coming Soon</div>} />
-        <Route path="settings" element={<div className="text-slate-500">Settings Page Coming Soon</div>} />
+        <Route path="complaints" element={<ComplaintsPage />} />
+        <Route path="users" element={<ResidentsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>
   );
