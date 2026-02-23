@@ -5,6 +5,9 @@ import com.society.backend.model.User;
 import com.society.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.society.backend.dto.LoginRequest;
@@ -35,5 +38,10 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/society/{societyId}")
+    public ResponseEntity<List<User>> getUsersBySociety(@PathVariable Long societyId) {
+        return ResponseEntity.ok(userService.getUsersBySociety(societyId));
     }
 }

@@ -8,6 +8,9 @@ import com.society.backend.model.User;
 import com.society.backend.repository.SocietyRepository;
 import com.society.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.society.backend.dto.LoginRequest;
@@ -62,5 +65,9 @@ public class UserService {
         String token = jwtUtil.generateToken(user.getEmail(), user.getId(), user.getRole());
 
         return new LoginResponse(token, user.getFullName(), user.getRole());
+    }
+    // Fetch all users for a specific society
+    public List<User> getUsersBySociety(Long societyId) {
+        return userRepository.findBySocietyId(societyId);
     }
 }

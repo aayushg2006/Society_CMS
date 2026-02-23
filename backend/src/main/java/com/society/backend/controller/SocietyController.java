@@ -24,4 +24,19 @@ public class SocietyController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // Add this endpoint
+    @PutMapping("/{id}")
+    public ResponseEntity<Society> updateSociety(
+            @PathVariable Long id, 
+            @RequestBody com.society.backend.dto.SocietyUpdateDto dto) {
+        return ResponseEntity.ok(societyService.updateSociety(id, dto));
+    }
+
+    // Add this missing endpoint to fetch society details
+    @GetMapping("/{id}")
+    public ResponseEntity<Society> getSociety(@PathVariable Long id) {
+        // Assuming you have a getSocietyById method in your SocietyService
+        return ResponseEntity.ok(societyService.getSocietyById(id));
+    }
 }
