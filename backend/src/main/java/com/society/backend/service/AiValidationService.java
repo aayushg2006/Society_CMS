@@ -32,4 +32,9 @@ public class AiValidationService {
             return null; // Return null if AI is down, so we don't crash the whole app
         }
     }
+
+    public boolean validateComplaint(String imageUrl) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'validateComplaint'");
+    }
 }

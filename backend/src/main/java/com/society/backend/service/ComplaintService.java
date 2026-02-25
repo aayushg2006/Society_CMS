@@ -9,6 +9,8 @@ import com.society.backend.repository.ComplaintRepository;
 import com.society.backend.repository.ComplaintVoteRepository;
 import com.society.backend.repository.SocietyRepository;
 import com.society.backend.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,44 +28,42 @@ public class ComplaintService {
     private final AiValidationService aiValidationService;
 
     // 1. Create a new complaint (Now with AI included)
+    @Transactional
     public Complaint createComplaint(ComplaintDto dto) {
-        Society society = societyRepository.findById(dto.getSocietyId())
-                .orElseThrow(() -> new RuntimeException("Society not found"));
-
-        User user = userRepository.findById(dto.getUserId())
+        Long userId;
+        // 1. Fetch the user submitting the complaint
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Complaint complaint = new Complaint();
-        complaint.setSociety(society);
-        complaint.setUser(user);
-        complaint.setTitle(dto.getTitle());
-        complaint.setDescription(dto.getDescription());
-        complaint.setCategory(dto.getCategory().toUpperCase());
-        complaint.setSeverity(dto.getSeverity().toUpperCase());
-        complaint.setImageUrl(dto.getImageUrl());
-
-        // --- AI VALIDATION LOGIC ---
+        // 2. Validate with AI (if an image/video URL is provided)
         if (dto.getImageUrl() != null && !dto.getImageUrl().isEmpty()) {
-            Map<String, Object> aiResult = aiValidationService.verifyComplaintMedia(
-                    dto.getImageUrl(), 
-                    dto.getCategory(), 
-                    dto.getDescription()
-            );
-
-            if (aiResult != null) {
-                Boolean isValid = (Boolean) aiResult.get("is_valid");
-                String aiReasoning = (String) aiResult.get("ai_reasoning");
-
-                if (isValid != null && !isValid) {
-                    // If AI says it's fake, reject it immediately!
-                    throw new RuntimeException("AI Verification Failed: " + aiReasoning);
-                } else {
-                    // If AI says it's real, pre-approve it to save time!
-                    complaint.setStatus("OPEN"); 
-                }
+            boolean isValid = aiValidationService.validateComplaint(dto.getImageUrl());
+            
+            if (!isValid) {
+                // PENALTY: Deduct 50 points for fake/spam reports
+                user.setReputationScore(user.getReputationScore() - 50);
+                userRepository.save(user);
+                
+                throw new RuntimeException("AI Validation Failed: Complaint rejected as spam. 50 reputation points deducted.");
+            } else {
+                // REWARD: Add 10 points for valid reports
+                user.setReputationScore(user.getReputationScore() + 10);
+                userRepository.save(user);
             }
         }
-        // -------------------------------
+
+        // 3. Save the complaint
+        Complaint complaint = new Complaint();
+        complaint.setTitle(dto.getTitle());
+        complaint.setDescription(dto.getDescription());
+        complaint.setCategory(dto.getCategory());
+        complaint.setSeverity(dto.getSeverity());
+        complaint.setImageUrl(dto.getImageUrl());
+        complaint.setStatus("PENDING_VERIFICATION");
+        complaint.setUpvotes(0);
+        
+        complaint.setUser(user);
+        complaint.setSociety(user.getSociety());
 
         return complaintRepository.save(complaint);
     }
