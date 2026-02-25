@@ -33,8 +33,23 @@ public class AiValidationService {
         }
     }
 
+    // FIXED: Now actually processes the AI response
     public boolean validateComplaint(String imageUrl) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateComplaint'");
+        // 1. Call the Python AI service 
+        // (Passing generic category/description since this method only receives the URL right now)
+        Map<String, Object> response = verifyComplaintMedia(imageUrl, "GENERAL", "Automated AI validation check");
+        
+        // 2. Safely extract the "is_valid" boolean from the Python JSON response
+        if (response != null && response.containsKey("is_valid")) {
+            Object isValidObj = response.get("is_valid");
+            if (isValidObj instanceof Boolean) {
+                return (Boolean) isValidObj;
+            }
+        }
+        
+        // 3. Fallback: If the Python server is offline, we return true. 
+        // This ensures residents can still post emergencies even if the AI is temporarily down.
+        // The admin will just have to manually verify it.
+        return true; 
     }
 }

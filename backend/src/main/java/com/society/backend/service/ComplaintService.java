@@ -30,8 +30,13 @@ public class ComplaintService {
     // 1. Create a new complaint (Now with AI included)
     @Transactional
     public Complaint createComplaint(ComplaintDto dto) {
-        Long userId;
+        Long userId = dto.getUserId();
         // 1. Fetch the user submitting the complaint
+
+        if (userId == null)
+        {
+            throw new RuntimeException("User ID must be provided to create a complaint.");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
