@@ -44,4 +44,9 @@ public class UserController {
     public ResponseEntity<List<User>> getUsersBySociety(@PathVariable Long societyId) {
         return ResponseEntity.ok(userService.getUsersBySociety(societyId));
     }
+
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
+        return ResponseEntity.ok(userService.getUsersByRole(role));
+    }
 }

@@ -70,4 +70,12 @@ public class UserService {
     public List<User> getUsersBySociety(Long societyId) {
         return userRepository.findBySocietyId(societyId);
     }
+
+    // Fetch users by their role (e.g., "VENDOR")
+    public List<User> getUsersByRole(String role) {
+        // You might want to filter by Society ID later, but this works globally for now
+        return userRepository.findAll().stream()
+                .filter(u -> u.getRole().equalsIgnoreCase(role))
+                .toList();
+    }
 }

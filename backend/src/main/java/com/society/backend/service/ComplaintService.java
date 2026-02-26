@@ -116,4 +116,23 @@ public class ComplaintService {
         complaint.setStatus(newStatus.toUpperCase());
         return complaintRepository.save(complaint);
     }
+
+    @Transactional
+    public Complaint assignVendor(Long complaintId, Long vendorId) {
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new RuntimeException("Complaint not found"));
+
+        User vendor = userRepository.findById(vendorId)
+                .orElseThrow(() -> new RuntimeException("Vendor not found"));
+
+        if (!vendor.getRole().equalsIgnoreCase("VENDOR")) {
+            throw new RuntimeException("Assigned user must have the VENDOR role");
+        }
+
+        // Set the vendor and update the status to IN_PROGRESS
+        complaint.setAssignedVendor(vendor);
+        complaint.setStatus("IN_PROGRESS");
+        
+        return complaintRepository.save(complaint);
+    }
 }

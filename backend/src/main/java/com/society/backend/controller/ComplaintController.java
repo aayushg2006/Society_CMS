@@ -55,4 +55,16 @@ public class ComplaintController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}/assign/{vendorId}")
+    public ResponseEntity<Complaint> assignVendor(
+            @PathVariable Long id, 
+            @PathVariable Long vendorId) {
+        try {
+            Complaint updatedComplaint = complaintService.assignVendor(id, vendorId);
+            return ResponseEntity.ok(updatedComplaint);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }
